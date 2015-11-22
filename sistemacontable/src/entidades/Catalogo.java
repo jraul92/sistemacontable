@@ -23,15 +23,21 @@ public class Catalogo extends sistemacontable.claseconexion implements operacion
     public Catalogo() {
 
     }
-      public Catalogo( String NCuenta, String Cuenta, String Tipo) {
-   
+
+    public Catalogo(String NCuenta, String Cuenta, String Tipo) {
+
         this.NCuenta = NCuenta;
         this.Cuenta = Cuenta;
         this.Tipo = Tipo;
     }
 
-            
-    public Catalogo(int IdCuenta, String NCuenta, String Cuenta,int CuentaPadre,  String Tipo) {
+    public Catalogo(String NCuenta, String Tipo) {
+
+        this.NCuenta = NCuenta;
+        this.Tipo = Tipo;
+    }
+
+    public Catalogo(int IdCuenta, String NCuenta, String Cuenta, int CuentaPadre, String Tipo) {
         this.CuentaPadre = CuentaPadre;
         this.IdCuenta = IdCuenta;
         this.NCuenta = NCuenta;
@@ -77,22 +83,21 @@ public class Catalogo extends sistemacontable.claseconexion implements operacion
 
     public void setCuenta(String Cuenta) {
         this.Cuenta = Cuenta;
-        
+
     }
 
     @Override
     public String toString() {
-        
+
         return Cuenta;//To change body of generated methods, choose Tools | Templates.
     }
-    
 
     @Override
     public void insertar() {
         try {
             conectar();
             St = con.createStatement();
-            
+
             St.executeUpdate("INSERT INTO tblcatalogo(NCuenta,Cuenta,TipoCuenta)"
                     + " VALUES('" + NCuenta + "','" + Cuenta + "','" + Tipo + "')");
 
@@ -144,8 +149,31 @@ public class Catalogo extends sistemacontable.claseconexion implements operacion
             e.printStackTrace();
         }
         return registros;
-        
+
     }
-   
+
+    public String[] consultarN(String numero) {
+        String N[] = new String[2];
+        try {
+            conectar();
+            St = con.createStatement();
+            Rs = St.executeQuery("SELECT Ncuenta,TipoCuenta FROM tblcatalogo WHERE `CuentaPadre` = '" + numero + "'");
+            registros = new ArrayList<Catalogo>();
+            while (Rs.next()) {
+                registros.add(new Catalogo(Rs.getString(1), Rs.getString(2)));
+            }
+            Catalogo cuentamayor = (Catalogo) registros.get(registros.size() - 1);
+            N[0] = numero + "." + registros.size();
+            N[1] = cuentamayor.getTipo();
+             System.out.println(cuentamayor.getCuentaPadre());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return N;
+
+    }
     
+    
+
+
 }
